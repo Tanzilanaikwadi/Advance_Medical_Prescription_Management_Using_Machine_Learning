@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+.env
+venv/
+.vscode/
+
+static/uploads/
+static/patient_images/
+static/doctor_documents/
+static/prescriptions/
+
+*.mp4
+*.pdf
+tempCodeRunnerFile.py
