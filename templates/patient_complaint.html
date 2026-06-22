@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}Submit Complaint - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card card" style="max-width: 600px; border-top: 5px solid #d63031;">
+        <div class="text-center mb-2">
+            <i class="fas fa-exclamation-circle fa-3x" style="color: #d63031;"></i>
+            <h2 class="mt-1">Report an Issue</h2>
+            <p style="color: #666;">We take your concerns seriously. Please provide details about your grievance.</p>
+        </div>
+
+        <form method="post">
+            <div class="form-group">
+                <label>Nature of Complaint</label>
+                <textarea name="complaint" placeholder="Describe the problem you encountered..." required style="min-height: 150px; padding: 1rem; border-radius: 12px; border: 2px solid #eee; width: 100%; font-family: inherit; font-size: 1rem; transition: border-color 0.3s;"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2; background: #d63031; border-color: #d63031;">Submit Grievance</button>
+                <a href="{{ url_for('patient_dashboard') }}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4rem 1rem;
+        background: #fff5f5;
+        min-height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    textarea:focus {
+        border-color: #d63031 !important;
+        outline: none;
+    }
+</style>
+{% endblock %}

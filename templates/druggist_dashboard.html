@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+
+{% block title %}Pharmacy Dashboard - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header text-center mb-1">
+            <div class="profile-img-container">
+                <i class="fas fa-pills fa-4x" style="color: var(--primary); margin-top: 15px;"></i>
+            </div>
+            <h3 class="mt-1">Pharmacy Portal</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Druggist Dashboard</p>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('druggist_dashboard') }}" class="active"><i class="fas fa-file-medical"></i> Prescriptions</a></li>
+            <li><a href="{{ url_for('add_medicine') }}"><i class="fas fa-plus-circle"></i> Add Medicine</a></li>
+            <li><a href="{{ url_for('view_medicine') }}"><i class="fas fa-capsules"></i> View Inventory</a></li>
+            <li><a href="{{ url_for('druggist_feedback') }}"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+            <li><a href="{{ url_for('druggist_complaint') }}"><i class="fas fa-exclamation-circle"></i> Complaints</a></li>
+            <li><a href="{{ url_for('logout') }}" style="color: #ff7675;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner card" style="background: linear-gradient(135deg, #0f4c75 0%, #3282b8 100%);">
+            <h2>Welcome, <span>{{ session.get('druggist_name', 'Pharmacist') }}</span></h2>
+            <p>Review uploaded prescriptions and manage your medical inventory effectively.</p>
+        </div>
+
+        <div class="card mt-2">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3>Customer Prescriptions</h3>
+                <span class="badge" style="background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px;">
+                    {{ prescriptions|length }} Total
+                </span>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Prescription File</th>
+                            <th>Current Status</th>
+                            <th>Decision Actions</th>
+                            <th>Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in prescriptions %}
+                        <tr>
+                            <td><strong>{{ p.patient_name }}</strong></td>
+                            <td>
+                                <a href="{{ url_for('view_pdf', filename=p.filename) }}" target="_blank" class="btn btn-sm btn-outline">
+                                    <i class="fas fa-file-pdf"></i> View PDF
+                                </a>
+                            </td>
+                            <td>
+                                <span class="status-tag status-{{ p.status|lower if p.status else 'pending' }}">
+                                    {{ p.status if p.status else 'Pending' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 5px;">
+                                    <a href="{{ url_for('update_prescription', id=p.id, status='Active') }}" class="btn btn-sm btn-success" title="Accept">
+                                        <i class="fas fa-check"></i>
+                                    </a>
+                                    <a href="{{ url_for('update_prescription', id=p.id, status='Rejected') }}" class="btn btn-sm btn-danger" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('delete_prescription', id=p.id) }}" 
+                                   class="btn btn-sm" style="background: #eee; color: #666;"
+                                   onclick="return confirm('Delete this prescription record?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not prescriptions %}
+                <div class="text-center p-2" style="color: #999;">
+                    <i class="fas fa-receipt fa-3x mb-1"></i>
+                    <p>No prescriptions uploaded yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container { display: flex; min-height: calc(100vh - 70px);
+        overflow-y: auto; }
+    .sidebar { 
+        width: 280px; 
+        background: var(--primary); 
+        color: white; 
+        padding: 2rem 1rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .profile-img-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 4px solid var(--secondary);
+        overflow: hidden;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .sidebar-nav { list-style: none; margin-top: 2rem; }
+    .sidebar-nav li { margin-bottom: 0.5rem; }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1.2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+    
+    .main-content { flex: 1; padding: 2rem; background: #f0f2f5; }
+    .welcome-banner { color: white; border: none; }
+    .welcome-banner h2 span { color: var(--secondary); }
+    
+    .modern-table { width: 100%; border-collapse: collapse; }
+    .modern-table th { text-align: left; padding: 1rem; border-bottom: 2px solid #eee; color: #666; font-size: 0.85rem; }
+    .modern-table td { padding: 1rem; border-bottom: 1px solid #eee; vertical-align: middle; }
+    
+    .status-tag { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .status-pending { background: #fff3e0; color: #f57c00; }
+    .status-active { background: #e8f5e9; color: #388e3c; }
+    .status-rejected { background: #ffebee; color: #d32f2f; }
+    
+    .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+</style>
+{% endblock %}

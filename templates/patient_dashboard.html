@@ -1,0 +1,179 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - {{ patient.name }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header text-center mb-1">
+            <div class="profile-img-container">
+                <img src="{{ url_for('static', filename='patient_images/' + patient.image) if patient.image else 'https://via.placeholder.com/100' }}" alt="Profile" class="profile-img">
+            </div>
+            <h3 class="mt-1">{{ patient.name }}</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Patient ID: #{{ patient.id }}</p>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('patient_dashboard') }}" class="active"><i class="fas fa-th-large"></i> Overview</a></li>
+            <li><a href="{{ url_for('take_appointment', patient_id=patient.id) }}"><i class="fas fa-calendar-check"></i> Book Appointment</a></li>
+            <li><a href="{{ url_for('upload_prescription') }}"><i class="fas fa-pills"></i> Order Medicine</a></li>
+            <li><a href="{{ url_for('disease_plan') }}"><i class="fas fa-utensils"></i> Personalized Diet</a></li>
+            <li><a href="{{ url_for('patient_history') }}"><i class="fas fa-history"></i> Medical History</a></li>
+            <li><a href="{{ url_for('check_status') }}"><i class="fas fa-info-circle"></i> Appointment Status</a></li>
+            <li><a href="{{ url_for('patient_emergency_services') }}"><i class="fas fa-ambulance"></i> Emergency</a></li>
+            <li><a href="{{ url_for('notification') }}" class="{% if has_notification %}has-badge{% endif %}">
+                <i class="fas fa-bell"></i> Notifications
+            </a></li>
+            <li><a href="{{ url_for('profile', patient_id=patient['id']) }}"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="{{ url_for('plogout') }}" style="color: #ff7675;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner card">
+            <h2>Welcome back, <span>{{ patient.name }}</span>!</h2>
+            <p>How can we help you stay healthy today?</p>
+        </div>
+
+        <div class="grid grid-3 mt-2">
+            <div class="card stat-card">
+                <i class="fas fa-heartbeat fa-2x" style="color: #e84393;"></i>
+                <div class="stat-info">
+                    <h4>Blood Group</h4>
+                    <p>{{ patient.blood_group }}</p>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <i class="fas fa-birthday-cake fa-2x" style="color: #0984e3;"></i>
+                <div class="stat-info">
+                    <h4>Age</h4>
+                    <p id="patient-age">Loading...</p>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <i class="fas fa-map-marker-alt fa-2x" style="color: #00b894;"></i>
+                <div class="stat-info">
+                    <h4>Location</h4>
+                    <p>{{ patient.address.split(',')[0] }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            <h3>Quick Actions</h3>
+            <div class="grid grid-2 mt-1">
+                <a href="{{ url_for('disease_plan') }}" class="card action-card">
+                    <div class="action-icon" style="background: #ffeaa7;"><i class="fas fa-stethoscope"></i></div>
+                    <div class="action-text">
+                        <h4>Get Treatment Recommendation</h4>
+                        <p>Analyze symptoms and get personalized diet/medicine plans.</p>
+                    </div>
+                </a>
+                <a href="{{ url_for('check_status') }}" class="card action-card">
+                    <div class="action-icon" style="background: #fab1a0;"><i class="fas fa-video"></i></div>
+                    <div class="action-text">
+                        <h4>Virtual Consultation</h4>
+                        <p>Check if your doctor has provided a video link for your session.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container { display: flex; min-height: calc(100vh - 70px);
+        overflow-y: auto; }
+    .sidebar { 
+        width: 280px; 
+        background: var(--primary); 
+        color: white; 
+        padding: 2rem 1rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .profile-img-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 4px solid var(--secondary);
+        overflow: hidden;
+        background: white;
+    }
+    .profile-img { width: 100%; height: 100%; object-fit: cover; }
+    .sidebar-nav { list-style: none; margin-top: 2rem; }
+    .sidebar-nav li { margin-bottom: 0.5rem; }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1.2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+    .sidebar-nav i { width: 20px; }
+    
+    .main-content { flex: 1; padding: 2rem; background: #f0f2f5; }
+    .welcome-banner {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        border: none;
+    }
+    .welcome-banner h2 span { color: var(--secondary); }
+    
+    .stat-card { display: flex; align-items: center; gap: 20px; padding: 1.5rem; border: none; }
+    .stat-info h4 { font-size: 0.9rem; color: #666; margin-bottom: 2px; }
+    .stat-info p { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+    
+    .action-card {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.3s;
+        border: none;
+    }
+    .action-card:hover { transform: translateY(-5px); }
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--primary);
+    }
+    .has-badge { position: relative; }
+    .has-badge::after {
+        content: '';
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        width: 8px;
+        height: 8px;
+        background: #ff7675;
+        border-radius: 50%;
+    }
+</style>
+
+<script>
+    // Calculate Age
+    const birthDateStr = "{{ patient.birth_date }}";
+    if (birthDateStr) {
+        const birthDate = new Date(birthDateStr);
+        const age = Math.floor((new Date() - birthDate) / (1000 * 60 * 60 * 24 * 365.25));
+        document.getElementById('patient-age').innerText = age + " Years";
+    }
+</script>
+{% endblock %}

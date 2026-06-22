@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Prescription</title>
+</head>
+<body>
+    <h2>Prescription Review for {{ p.patient_name }}</h2>
+
+    {% for p in prescriptions %}
+<tr>
+    <td>{{ p.id }}</td>
+    <td>{{ p.patient_name }}</td>
+    <td>{{ p.patient_email }}</td>
+    <td>
+        <a href="{{ url_for('static', filename='prescriptions/' ~ p.pdf_filename) }}" target="_blank">Open</a>
+    </td>
+    <td class="{{ p.status|lower }}">{{ p.status }}</td>
+    <td>
+        {% if p.status == "Pending" %}
+            <a href="{{ url_for('review_prescription', prescription_id=p.id) }}">
+                <button>Review</button>
+            </a>
+        {% else %}
+            ---
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+</body>
+</html>

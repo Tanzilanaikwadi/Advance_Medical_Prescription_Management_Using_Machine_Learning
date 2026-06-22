@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}Reschedule Appointment - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card card" style="max-width: 500px;">
+        <div class="text-center mb-2">
+            <i class="fas fa-calendar-alt fa-3x" style="color: var(--primary);"></i>
+            <h2 class="mt-1">Propose New Time</h2>
+            <p style="color: #666;">Suggest a different date and time for <strong>{{ appointment.name }}</strong>.</p>
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label><i class="fas fa-calendar-day"></i> New Proposed Date</label>
+                <input type="date" name="new_date" required style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee;">
+            </div>
+            <div class="form-group mt-1">
+                <label><i class="fas fa-clock"></i> New Proposed Time</label>
+                <input type="time" name="new_time" required style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee;">
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2;">Confirm Reschedule</button>
+                <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4rem 1rem;
+        background: #f0f2f5;
+        min-height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}

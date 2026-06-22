@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block title %}Doctor Profile - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header text-center mb-1">
+            <div class="profile-img-container">
+                {% if doctor.photo %}
+                    <img src="{{ url_for('static', filename='doctor_documents/' + doctor.photo) }}" alt="Doctor Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <i class="fas fa-user-md fa-4x" style="color: var(--primary); margin-top: 15px;"></i>
+                {% endif %}
+            </div>
+            <h3 class="mt-1">Dr. {{ doctor.name }}</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7;">{{ doctor.department }}</p>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('doctor_dashboard') }}"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
+            <li><a href="{{ url_for('doctor_profile', id=doctor.id) }}" class="active"><i class="fas fa-user-md"></i> My Profile</a></li>
+            <li><a href="{{ url_for('doctor_feedback') }}"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+            <li><a href="{{ url_for('doctor_complaint') }}"><i class="fas fa-exclamation-circle"></i> Complaints</a></li>
+            <li><a href="{{ url_for('home') }}" style="color: #ff7675;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner card" style="background: linear-gradient(135deg, #0f4c75 0%, #3282b8 100%);">
+            <h2>Medical Practitioner Profile</h2>
+            <p>Review your professional credentials and account status within the SHREE HEALTHCARE network.</p>
+        </div>
+
+        <div class="card mt-2" style="max-width: 700px; margin: 0 auto;">
+            <div class="profile-details">
+                <div class="detail-row">
+                    <span class="label">Full Name</span>
+                    <span class="value">Dr. {{ doctor.name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Specialization</span>
+                    <span class="value badge" style="background: var(--secondary); color: var(--primary);">{{ doctor.department }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Medical License</span>
+                    <span class="value">{{ doctor.license_no }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Email Address</span>
+                    <span class="value">{{ doctor.email }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Mobile Number</span>
+                    <span class="value">{{ doctor.mobile }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Account Status</span>
+                    <span class="value status-tag status-{{ doctor.status|lower }}">{{ doctor.status }}</span>
+                </div>
+            </div>
+            
+            <div class="mt-2 text-center">
+                <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Back to Schedule
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container { display: flex; min-height: calc(100vh - 70px);
+        overflow-y: auto; }
+    .sidebar { 
+        width: 280px; 
+        background: var(--primary); 
+        color: white; 
+        padding: 2rem 1rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .profile-img-container {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 4px solid var(--secondary);
+        overflow: hidden;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1.2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+    .main-content { flex: 1; padding: 2rem; background: #f0f2f5; }
+    .welcome-banner { color: white; border: none; }
+    
+    .profile-details { display: flex; flex-direction: column; gap: 1.5rem; }
+    .detail-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid #eee; }
+    .detail-row:last-child { border-bottom: none; }
+    .label { color: #666; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; }
+    .value { color: #333; font-weight: 500; font-size: 1.1rem; }
+    
+    .status-tag { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .status-accepted { background: #e8f5e9; color: #388e3c; }
+    .status-pending { background: #fff3e0; color: #f57c00; }
+</style>
+{% endblock %}

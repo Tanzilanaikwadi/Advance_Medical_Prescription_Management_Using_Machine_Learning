@@ -1,0 +1,199 @@
+{% extends "layout.html" %}
+
+{% block title %}Doctor Dashboard - {{ doctor['name'] }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header text-center mb-1">
+            <div class="profile-img-container">
+                <img src="{{ url_for('static', filename='doctor_documents/' + doctor['photo']) if doctor['photo'] else 'https://via.placeholder.com/100' }}" alt="Profile" class="profile-img">
+            </div>
+            <h3 class="mt-1">{{ doctor['name'] }}</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7;">{{ doctor['department'] }} Specialist</p>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('doctor_dashboard') }}" class="active"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
+            <li><a href="{{ url_for('doctor_profile', id=doctor['id']) }}"><i class="fas fa-user-md"></i> My Profile</a></li>
+            <li><a href="{{ url_for('doctor_feedback') }}"><i class="fas fa-comment-dots"></i> Feedback</a></li>
+            <li><a href="{{ url_for('doctor_complaint') }}"><i class="fas fa-exclamation-circle"></i> Complaints</a></li>
+            <li><a href="{{ url_for('dlogout') }}" style="color: #ff7675;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner card">
+            <h2>Doctor Portal: <span>{{ doctor['name'] }}</span></h2>
+            <p>Manage your patient appointments and consultations efficiently.</p>
+        </div>
+
+        <div class="card mt-2">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3>Upcoming Appointments</h3>
+                <span class="badge" style="background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px;">
+                    {{ appointments|length }} Total
+                </span>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Patient Details</th>
+                            <th>Schedule</th>
+                            <th>Mode</th>
+                            <th>Status</th>
+                            <th>Join</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                        <tr>
+                            <td>
+                                <strong>{{ appointment.name }}</strong> 
+                                {% if appointment.is_urgent %}
+                                <span class="badge" style="background: #dc3545; color: white; padding: 2px 6px; font-size: 0.7rem; margin-left: 5px;"><i class="fas fa-exclamation-triangle"></i> URGENT</span>
+                                {% endif %}
+                                <br>
+                                <small style="color: #666;">{{ appointment.email }} | {{ appointment.phone }}</small><br>
+                                <small>BG: {{ appointment.blood_group }} | {{ appointment.gender }}</small><br>
+                                {% if appointment.symptoms %}
+                                <small style="color: #e67e22; font-weight: bold;"><i class="fas fa-notes-medical"></i> Symptoms: {{ appointment.symptoms }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <i class="far fa-calendar-alt"></i> {{ appointment.preferred_date }}<br>
+                                <i class="far fa-clock"></i> {{ appointment.preferred_time }}
+                            </td>
+                            <td>
+                                <span class="mode-tag {{ appointment.consultation_mode|lower }}">
+                                    {{ appointment.consultation_mode }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-tag status-{{ appointment.status|lower }}">
+                                    {{ appointment.status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if appointment.video_link %}
+                                    <a href="{{ appointment.video_link }}" target="_blank" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">
+                                        <i class="fas fa-video"></i> Join
+                                    </a>
+                                {% else %}
+                                    <span style="color: #ccc;">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 5px;">
+                                    <button class="btn btn-sm btn-success" onclick="updateStatus('{{ appointment.id }}', 'Accepted')" title="Accept">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="updateStatus('{{ appointment.id }}', 'Rejected')" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <a href="{{ url_for('doctor_reschedule', appointment_id=appointment.id) }}" class="btn btn-sm btn-outline" title="Reschedule">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not appointments %}
+                <div class="text-center p-2" style="color: #999;">
+                    <i class="fas fa-calendar-times fa-3x mb-1"></i>
+                    <p>No appointments found.</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container { display: flex; min-height: calc(100vh - 70px);
+        overflow-y: auto; }
+    .sidebar { 
+        width: 280px; 
+        background: var(--primary); 
+        color: white; 
+        padding: 2rem 1rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .profile-img-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 4px solid var(--secondary);
+        overflow: hidden;
+        background: white;
+    }
+    .profile-img { width: 100%; height: 100%; object-fit: cover; }
+    .sidebar-nav { list-style: none; margin-top: 2rem; }
+    .sidebar-nav li { margin-bottom: 0.5rem; }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1.2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+    
+    .main-content { flex: 1; padding: 2rem; background: #f0f2f5; }
+    .welcome-banner {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        border: none;
+    }
+    .welcome-banner h2 span { color: var(--secondary); }
+    
+    .modern-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    .modern-table th { text-align: left; padding: 1rem; border-bottom: 2px solid #eee; color: #666; font-size: 0.85rem; }
+    .modern-table td { padding: 1rem; border-bottom: 1px solid #eee; vertical-align: middle; }
+    
+    .mode-tag { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .mode-tag.video { background: #e3f2fd; color: #1976d2; }
+    .mode-tag.physical { background: #f3e5f5; color: #7b1fa2; }
+    
+    .status-tag { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+    .status-pending { background: #fff3e0; color: #f57c00; }
+    .status-accepted { background: #e8f5e9; color: #388e3c; }
+    .status-rejected { background: #ffebee; color: #d32f2f; }
+    .status-rescheduled { background: #e3f2fd; color: #1976d2; }
+    
+    .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-danger { background: #dc3545; color: white; }
+</style>
+
+<script>
+    function updateStatus(appointmentId, status) {
+        if(!confirm(`Are you sure you want to ${status} this appointment?`)) return;
+        
+        fetch(`/update_status/${appointmentId}/${status}`, {
+            method: 'GET'
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Failed to update status.");
+            }
+        });
+    }
+</script>
+{% endblock %}

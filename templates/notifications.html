@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+
+{% block title %}Notifications - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header text-center mb-1">
+            <div class="profile-img-container">
+                <i class="fas fa-bell fa-4x" style="color: var(--primary); margin-top: 15px;"></i>
+            </div>
+            <h3 class="mt-1">Patient Portal</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7;">System Notifications</p>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('patient_dashboard') }}"><i class="fas fa-th-large"></i> Overview</a></li>
+            <li><a href="{{ url_for('notification') }}" class="active"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="{{ url_for('patient_history') }}"><i class="fas fa-history"></i> Medical History</a></li>
+            <li><a href="{{ url_for('home') }}" style="color: #ff7675;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <h2>Your Notifications</h2>
+            <p>Stay updated on your appointment status, reschedule requests, and medical alerts.</p>
+        </div>
+
+        <div class="container mt-2" style="max-width: 800px; margin: 0 auto;">
+            {% if message %}
+                <div class="alert alert-info mb-2" style="background: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px; border-radius: 8px;">
+                    <i class="fas fa-info-circle"></i> {{ message }}
+                </div>
+                
+                <div class="notification-list">
+                    {% for a in appointments %}
+                        <div class="card mb-1" style="border-left: 5px solid var(--primary);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <h4 style="color: var(--primary);">Reschedule Request</h4>
+                                    <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">
+                                        Your appointment (#{{ a['id'] }}) has been proposed for a new slot.
+                                    </p>
+                                </div>
+                                <span class="badge" style="background: #f0f2f5; color: #666;">ID: #{{ a['id'] }}</span>
+                            </div>
+                            
+                            <div class="mt-1 p-1" style="background: #f8f9fa; border-radius: 8px; display: flex; gap: 20px;">
+                                <div>
+                                    <small class="text-muted">NEW DATE</small>
+                                    <p><strong>{{ a['preferred_date'] }}</strong></p>
+                                </div>
+                                <div>
+                                    <small class="text-muted">NEW TIME</small>
+                                    <p><strong>{{ a['preferred_time'] }}</strong></p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-1 text-right">
+                                <a href="{{ url_for('check_status') }}" class="btn btn-sm btn-outline">Review Status</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center p-3" style="background: white; border-radius: 20px; box-shadow: var(--shadow);">
+                    <div class="mb-2">
+                        <i class="fas fa-check-circle fa-4x" style="color: #2ecc71;"></i>
+                    </div>
+                    <h3>You're all caught up!</h3>
+                    <p style="color: #666;">No new notifications or alerts at the moment.</p>
+                    <a href="{{ url_for('patient_dashboard') }}" class="btn btn-primary mt-1">Back to Dashboard</a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container { display: flex; min-height: calc(100vh - 70px);
+        overflow-y: auto; }
+    .sidebar { 
+        width: 280px; 
+        background: var(--primary); 
+        color: white; 
+        padding: 2rem 1rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .profile-img-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 4px solid var(--secondary);
+        overflow: hidden;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1.2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+    .main-content { flex: 1; padding: 2rem; background: #f0f2f5; }
+    .welcome-banner { color: white; border: none; }
+</style>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+
+{% block title %}Medical History - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header text-center mb-1">
+            <div class="profile-img-container">
+                <i class="fas fa-user fa-4x" style="color: var(--primary); margin-top: 15px;"></i>
+            </div>
+            <h3 class="mt-1">Patient Portal</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Medical History</p>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('patient_dashboard') }}"><i class="fas fa-th-large"></i> Overview</a></li>
+            <li><a href="{{ url_for('patient_history') }}" class="active"><i class="fas fa-history"></i> Medical History</a></li>
+            <li><a href="{{ url_for('home') }}" style="color: #ff7675;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner card" style="background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);">
+            <h2>Your Medical Timeline</h2>
+            <p>A comprehensive record of your past consultations, diagnoses, and treatment plans at SHREE HEALTHCARE.</p>
+        </div>
+
+        <div class="card mt-2">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3>Consultation History</h3>
+                <span class="badge" style="background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px;">
+                    {{ history|length }} Records
+                </span>
+            </div>
+            
+            {% if history %}
+            <div style="overflow-x: auto;">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Diagnosis</th>
+                            <th>Prescribed Medicine</th>
+                            <th>Dosage & Frequency</th>
+                            <th>Recommended Diet</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in history %}
+                        <tr>
+                            <td>
+                                <strong>{{ record[6] }}</strong><br>
+                                <small style="color: #666;">{{ record[7] }}</small>
+                            </td>
+                            <td><span class="badge" style="background: #fdf2f2; color: #d32f2f;">{{ record[0] }}</span></td>
+                            <td><strong>{{ record[1] }}</strong></td>
+                            <td>
+                                <small>Dosage: {{ record[2] }}</small><br>
+                                <small>Frequency: {{ record[3] }} per day</small>
+                            </td>
+                            <td>
+                                <div style="max-width: 300px;">
+                                    <small><strong>Type:</strong> {{ record[4] }}</small><br>
+                                    <small style="color: #666;">{{ record[5] }}</small>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <div class="text-center p-3" style="color: #999;">
+                    <i class="fas fa-folder-open fa-4x mb-1"></i>
+                    <h3>No medical history found</h3>
+                    <p>Records will appear here after your consultations.</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container { display: flex; min-height: calc(100vh - 70px);
+        overflow-y: auto; }
+    .sidebar { 
+        width: 280px; 
+        background: var(--primary); 
+        color: white; 
+        padding: 2rem 1rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .profile-img-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 4px solid var(--secondary);
+        overflow: hidden;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1.2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+    
+    .main-content { flex: 1; padding: 2rem; background: #f0f2f5; }
+    .welcome-banner { color: white; border: none; }
+    
+    .modern-table { width: 100%; border-collapse: collapse; }
+    .modern-table th { text-align: left; padding: 1rem; border-bottom: 2px solid #eee; color: #666; font-size: 0.85rem; }
+    .modern-table td { padding: 1rem; border-bottom: 1px solid #eee; vertical-align: middle; }
+</style>
+{% endblock %}

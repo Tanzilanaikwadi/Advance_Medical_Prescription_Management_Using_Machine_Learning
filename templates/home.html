@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %}SHREE HEALTHCARE - Compassionate Care{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Compassionate Care, <br><span>Exceptional Service</span></h1>
+        <p>Your health and well-being are our top priorities. We provide state-of-the-art medical services with a personal touch.</p>
+        <div class="hero-btns mt-2">
+            <a href="{{ url_for('patient_registration') }}" class="btn btn-primary">Book Appointment</a>
+            <a href="{{ url_for('about') }}" class="btn btn-outline" style="color: white; border-color: white;">Learn More</a>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="grid grid-3">
+        <div class="card text-center">
+            <i class="fas fa-user-md fa-3x mb-1" style="color: var(--primary);"></i>
+            <h3 class="mt-1">Expert Doctors</h3>
+            <p class="mt-1">Access to top-tier medical professionals across various specializations.</p>
+        </div>
+        <div class="card text-center">
+            <i class="fas fa-clock fa-3x mb-1" style="color: var(--primary);"></i>
+            <h3 class="mt-1">24/7 Support</h3>
+            <p class="mt-1">Our emergency services and support teams are available round the clock.</p>
+        </div>
+        <div class="card text-center">
+            <i class="fas fa-file-medical fa-3x mb-1" style="color: var(--primary);"></i>
+            <h3 class="mt-1">Digital Prescriptions</h3>
+            <p class="mt-1">Securely manage and download your medical records and prescriptions.</p>
+        </div>
+    </div>
+
+
+</div>
+
+<style>
+    .portal-card {
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    .portal-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--primary);
+        box-shadow: var(--shadow);
+    }
+    .admin-portal:hover {
+        border-color: #d63031;
+    }
+    .admin-portal i {
+        color: #d63031;
+    }
+
+    .hero {
+        background: linear-gradient(rgba(15, 76, 117, 0.8), rgba(15, 76, 117, 0.8)), 
+                    url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&q=80&w=2000');
+        background-size: cover;
+        background-position: center;
+        border-radius: 0 0 50px 50px;
+        padding: 8rem 5%;
+    }
+    .hero h1 span {
+        color: var(--secondary);
+    }
+    .mb-1 { margin-bottom: 1rem; }
+    h2 span { color: var(--primary); }
+</style>
+{% endblock %}

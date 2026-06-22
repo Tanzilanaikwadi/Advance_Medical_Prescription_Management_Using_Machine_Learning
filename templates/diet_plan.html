@@ -1,0 +1,166 @@
+{% extends "layout.html" %}
+
+{% block title %}Dietary Recommendations - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header text-center mb-1">
+            <div class="profile-img-container">
+                <i class="fas fa-apple-alt fa-4x" style="color: var(--primary); margin-top: 15px;"></i>
+            </div>
+            <h3 class="mt-1">Patient Portal</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Dietary Guidance</p>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('patient_dashboard') }}"><i class="fas fa-th-large"></i> Overview</a></li>
+            <li><a href="{{ url_for('disease_plan') }}"><i class="fas fa-stethoscope"></i> Symptom Analysis</a></li>
+            <li><a href="{{ url_for('diet_plan') }}" class="active"><i class="fas fa-utensils"></i> Diet Recommendations</a></li>
+            <li><a href="{{ url_for('patient_history') }}"><i class="fas fa-history"></i> Medical History</a></li>
+            <li><a href="{{ url_for('home') }}" style="color: #ff7675;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <h2>Personalized Diet Plan</h2>
+            <p>Select your conditions to receive scientifically backed dietary and medicinal recommendations.</p>
+        </div>
+
+        <div class="grid grid-2 mt-2">
+            <!-- Selection Card -->
+            <div class="card">
+                <h3><i class="fas fa-list-check"></i> Select Conditions</h3>
+                <p style="color: #666; margin-bottom: 1.5rem;">Select one or more conditions from the list below.</p>
+                
+                <form id="disease-form">
+                    <div class="form-group">
+                        <select id="disease-select" multiple style="width: 100%; height: 250px; padding: 10px; border-radius: 12px; border: 2px solid #eee; font-family: inherit;">
+                            {% for disease in diseases %}
+                                <option value="{{ disease }}" style="padding: 10px; border-bottom: 1px solid #f0f0f0;">{{ disease }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-1" style="width: 100%;">
+                        <i class="fas fa-magic"></i> Generate Recommendations
+                    </button>
+                </form>
+            </div>
+
+            <!-- Result Card -->
+            <div id="result" class="card" style="display:none; border-left: 5px solid #27ae60;">
+                <h3><i class="fas fa-clipboard-list"></i> Your Recommendations</h3>
+                
+                <div class="recommendation-content mt-1">
+                    <div class="rec-item mb-1">
+                        <small class="text-muted">PRESCRIBED MEDICINE</small>
+                        <p><strong id="medicine" style="font-size: 1.2rem; color: var(--primary);"></strong></p>
+                    </div>
+                    
+                    <div class="grid grid-2 mb-1">
+                        <div class="rec-item">
+                            <small class="text-muted">DOSAGE</small>
+                            <p id="dosage"></p>
+                        </div>
+                        <div class="rec-item">
+                            <small class="text-muted">FREQUENCY</small>
+                            <p><span id="doses"></span> times per day</p>
+                        </div>
+                    </div>
+
+                    <div class="rec-item mb-1" style="background: #f0fff4; padding: 15px; border-radius: 12px;">
+                        <small class="text-muted" style="color: #27ae60;">DIETARY GUIDELINES</small>
+                        <p><strong id="diet"></strong></p>
+                        <p id="diet_plan" style="color: #666; margin-top: 5px; font-size: 0.9rem; line-height: 1.4;"></p>
+                    </div>
+
+                    <button class="btn btn-outline mt-1" style="width: 100%;" onclick="window.location.href='/download_prescription'">
+                        <i class="fas fa-download"></i> Download Digital Prescription
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container { display: flex; min-height: calc(100vh - 70px);
+        overflow-y: auto; }
+    .sidebar { 
+        width: 280px; 
+        background: var(--primary); 
+        color: white; 
+        padding: 2rem 1rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .profile-img-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 4px solid var(--secondary);
+        overflow: hidden;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1.2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+    .main-content { flex: 1; padding: 2rem; background: #f0f2f5; }
+    .welcome-banner { color: white; border: none; }
+    
+    #disease-select option:checked {
+        background: var(--primary) linear-gradient(0deg, var(--primary) 0%, var(--primary) 100%);
+        color: white;
+    }
+    
+    @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+    #result { animation: slideIn 0.5s ease; }
+</style>
+
+<script>
+    document.getElementById("disease-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        let selected = Array.from(document.getElementById("disease-select").selectedOptions).map(o => o.value);
+
+        if (selected.length === 0) {
+            alert("Please select at least one condition.");
+            return;
+        }
+
+        fetch("/get_recommendation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ "diseases": selected })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) return alert(data.error);
+            
+            document.getElementById("medicine").innerText = data.medicine;
+            document.getElementById("dosage").innerText = data.dosage;
+            document.getElementById("doses").innerText = data.doses;
+            document.getElementById("diet").innerText = data.diet;
+            document.getElementById("diet_plan").innerText = data.diet_plan;
+            document.getElementById("result").style.display = "block";
+        });
+    });
+</script>
+{% endblock %}

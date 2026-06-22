@@ -1,0 +1,170 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin Dashboard - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header text-center mb-1">
+            <div class="profile-img-container">
+                <i class="fas fa-user-shield fa-4x" style="color: var(--primary); margin-top: 15px;"></i>
+            </div>
+            <h3 class="mt-1">Administrator</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Active Doctors: {{ active_count }}</p>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('admin_doctors') }}" class="active"><i class="fas fa-user-md"></i> Doctors Management</a></li>
+            <li><a href="{{ url_for('patient_info') }}"><i class="fas fa-users"></i> Patients & Appointments</a></li>
+            <li><a href="{{ url_for('emergency_services') }}"><i class="fas fa-ambulance"></i> Emergency Services</a></li>
+            <li><a href="{{ url_for('admin_view_feedbacks') }}"><i class="fas fa-comments"></i> Feedback & Complaints</a></li>
+            <li><a href="{{ url_for('home') }}" style="color: #ff7675;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner card">
+            <h2>Admin Control Panel</h2>
+            <p>Review doctor applications, manage active medical staff, and monitor system health.</p>
+        </div>
+
+        <div class="card mt-2">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3>Medical Staff Directory</h3>
+                <span class="badge" style="background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px;">
+                    {{ doctors|length }} Total Applications
+                </span>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Doctor Profile</th>
+                            <th>Credentials</th>
+                            <th>Experience</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doctor in doctors %}
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <img src="{{ url_for('static', filename='doctor_documents/' + doctor[6]) if doctor[6] else 'https://via.placeholder.com/50' }}" 
+                                         style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #eee;">
+                                    <div>
+                                        <strong>{{ doctor[1] }}</strong><br>
+                                        <small style="color: #666;">{{ doctor[3] }} | {{ doctor[5] }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <small><strong>Education:</strong> {{ doctor[10] }}</small><br>
+                                <small><strong>License:</strong> {{ doctor[4] }}</small><br>
+                                <small><strong>Year:</strong> {{ doctor[11] }}</small>
+                            </td>
+                            <td>
+                                <span class="badge" style="background: #e3f2fd; color: #1976d2;">{{ doctor[12] }} Years</span>
+                            </td>
+                            <td>
+                                <span class="status-tag status-{{ doctor[7]|lower }}">
+                                    {{ doctor[7] }}
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 5px;">
+                                    {% if doctor[7] == 'pending' %}
+                                        <a href="{{ url_for('approve_doctor', id=doctor[0]) }}" class="btn btn-sm btn-success" title="Approve">
+                                            <i class="fas fa-check"></i>
+                                        </a>
+                                        <a href="{{ url_for('reject_doctor', id=doctor[0]) }}" class="btn btn-sm btn-danger" title="Reject">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    {% elif doctor[7] == 'approved' %}
+                                        {% if doctor[8] == 1 %}
+                                            <a href="{{ url_for('toggle_doctor_status', id=doctor[0]) }}" class="btn btn-sm btn-warning" title="Deactivate">
+                                                <i class="fas fa-power-off"></i>
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ url_for('toggle_doctor_status', id=doctor[0]) }}" class="btn btn-sm btn-success" title="Activate">
+                                                <i class="fas fa-play"></i>
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container { display: flex; min-height: calc(100vh - 70px);
+        overflow-y: auto; }
+    .sidebar { 
+        width: 280px; 
+        background: var(--primary); 
+        color: white; 
+        padding: 2rem 1rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .profile-img-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 4px solid var(--secondary);
+        overflow: hidden;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .sidebar-nav { list-style: none; margin-top: 2rem; }
+    .sidebar-nav li { margin-bottom: 0.5rem; }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1.2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+    
+    .main-content { flex: 1; padding: 2rem; background: #f0f2f5; }
+    .welcome-banner {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        border: none;
+    }
+    
+    .modern-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    .modern-table th { text-align: left; padding: 1rem; border-bottom: 2px solid #eee; color: #666; font-size: 0.85rem; }
+    .modern-table td { padding: 1rem; border-bottom: 1px solid #eee; vertical-align: middle; }
+    
+    .status-tag { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .status-pending { background: #fff3e0; color: #f57c00; }
+    .status-approved { background: #e8f5e9; color: #388e3c; }
+    .status-rejected { background: #ffebee; color: #d32f2f; }
+    
+    .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-danger { background: #dc3545; color: white; }
+    .btn-warning { background: #ffc107; color: black; }
+</style>
+{% endblock %}

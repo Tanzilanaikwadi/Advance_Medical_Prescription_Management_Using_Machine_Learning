@@ -1,0 +1,181 @@
+{% extends "layout.html" %}
+
+{% block title %}Doctor Access - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card card">
+        <h2 class="text-center mt-1">Doctor Portal</h2>
+        <p class="text-center" style="color: #666; margin-bottom: 2rem;">Access your consultations and patient records.</p>
+        
+        <form action="{{ url_for('doctor_dashboard') }}" method="POST">
+            <div class="form-group">
+                <label for="username"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="username" name="username" placeholder="Doctor Username" required>
+            </div>
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login to Dashboard</button>
+        </form>
+
+        <div class="mt-2 text-center">
+            <p>New to Shree Healthcare?</p>
+            <button class="btn btn-outline mt-1" id="openModal" style="width: 100%;">
+                <i class="fas fa-user-plus"></i> Register as a Doctor
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Doctor Modal -->
+<div id="doctorModal" class="modal">
+    <div class="modal-content card">
+        <span class="close" id="closeModal">&times;</span>
+        <h2 class="text-center">Doctor Registration</h2>
+        <p class="text-center" style="color: #666; margin-bottom: 2rem;">Apply to join our panel of expert doctors.</p>
+        
+        <form method="POST" action="/add_doctor" enctype="multipart/form-data">
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" required>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label>Department</label>
+                    <select name="department">
+                        <option value="Surgery">Surgery</option>
+                        <option value="Cardiology">Cardiology</option>
+                        <option value="Neurology">Neurology</option>
+                        <option value="Orthopedics">Orthopedics</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Education</label>
+                    <input type="text" name="education" placeholder="e.g., MBBS, MD" required>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label>Certificate (Image)</label>
+                    <input type="file" name="certificate" accept=".jpg,.png,.jpeg">
+                </div>
+                <div class="form-group">
+                    <label>Passing Year</label>
+                    <select name="passing_year" required>
+                        {% for year in range(1980, 2026)|reverse %}
+                            <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label>Experience (Years)</label>
+                    <input type="number" name="experience" min="0" max="50" required>
+                </div>
+                <div class="form-group">
+                    <label>License Number</label>
+                    <input type="text" name="license_no" pattern="\d{6}" title="6 digit number" required>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="text" name="mobile" pattern="\d{10}" title="10 digit number" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password"
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
+                        title="Must be at least 8 characters long and include an uppercase letter, lowercase letter, number, and special character"
+                        required>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label>Profile Photo</label>
+                    <input type="file" name="photo" accept=".jpg,.jpeg,.png" required>
+                </div>
+                <div class="form-group">
+                    <label>Degree Document (PDF)</label>
+                    <input type="file" name="document" accept=".pdf" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Application</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4rem 1rem;
+        background: url('https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&q=80&w=2000');
+        background-size: cover;
+        background-position: center;
+        min-height: calc(100vh - 70px);
+    }
+    .auth-card {
+        width: 100%;
+        max-width: 450px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        z-index: 2000;
+        overflow-y: auto;
+        padding: 2rem 0;
+    }
+    .modal-content {
+        max-width: 800px;
+        margin: auto;
+        position: relative;
+    }
+    .close {
+        position: absolute;
+        right: 1.5rem;
+        top: 1rem;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #666;
+    }
+    .close:hover { color: var(--primary); }
+</style>
+
+<script>
+    const modal = document.getElementById("doctorModal");
+    const btn = document.getElementById("openModal");
+    const span = document.getElementById("closeModal");
+
+    btn.onclick = function() { modal.style.display = "block"; }
+    span.onclick = function() { modal.style.display = "none"; }
+    window.onclick = function(event) {
+        if (event.target == modal) { modal.style.display = "none"; }
+    }
+</script>
+{% endblock %}

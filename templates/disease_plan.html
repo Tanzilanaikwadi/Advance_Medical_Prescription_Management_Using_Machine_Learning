@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+
+{% block title %}Get Recommendation - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="container mt-2">
+    <div class="grid grid-2">
+        <div class="card">
+            <h2><i class="fas fa-stethoscope" style="color: var(--primary);"></i> Symptom Analysis</h2>
+            <p class="mt-1" style="color: #666;">Select the conditions you are currently experiencing to receive a personalized diet and medicine recommendation.</p>
+            
+            <form id="disease-form" class="mt-2">
+                <div class="form-group">
+                    <label for="symptoms"><i class="fas fa-brain"></i> Smart Search (NLP)</label>
+                    <textarea id="symptoms" name="symptoms" rows="3" placeholder="Describe your symptoms (e.g. 'I have a bad cough and high fever')" style="width: 100%; padding: 10px; border-radius: 5px; border: 2px solid #eee; resize: vertical; margin-bottom: 1rem;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="disease-select">Or Select Diseases Manually (Hold Ctrl to select multiple)</label>
+                    <select id="disease-select" name="diseases" multiple style="height: 200px;">
+                        {% for disease in diseases %}
+                            <option value="{{ disease }}">{{ disease }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-magic"></i> Generate Recommendation
+                </button>
+            </form>
+        </div>
+
+        <div id="result-card" class="card" style="display:none; border-left: 5px solid var(--accent);">
+            <div class="text-center">
+                <i class="fas fa-check-circle fa-3x" style="color: var(--accent);"></i>
+                <h2 class="mt-1">Recommendation Ready</h2>
+            </div>
+            
+            <div class="recommendation-content mt-2">
+                <div class="rec-section">
+                    <h4><i class="fas fa-pills"></i> Medication</h4>
+                    <p><strong>Medicine:</strong> <span id="medicine"></span></p>
+                    <p><strong>Dosage:</strong> <span id="dosage"></span></p>
+                    <p><strong>Frequency:</strong> <span id="doses"></span> doses per day</p>
+                </div>
+                
+                <hr style="margin: 1.5rem 0; opacity: 0.1;">
+                
+                <div class="rec-section">
+                    <h4><i class="fas fa-apple-alt"></i> Diet Plan</h4>
+                    <p><strong>Diet Type:</strong> <span id="diet"></span></p>
+                    <p><strong>Instructions:</strong> <span id="diet_plan"></span></p>
+                </div>
+            </div>
+
+            <div class="mt-2">
+                <a href="/download_prescription" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-file-download"></i> Download Prescription PDF
+                </a>
+                <p class="text-center mt-1" style="font-size: 0.8rem; color: #888;">
+                    * This is a computer-generated recommendation. Please consult a doctor for official medical advice.
+                </p>
+            </div>
+        </div>
+        
+        <div id="placeholder-card" class="card text-center" style="display: flex; flex-direction: column; justify-content: center; background: #f8f9fa; border: 2px dashed #ddd;">
+            <i class="fas fa-clipboard-list fa-4x" style="color: #ccc;"></i>
+            <h3 class="mt-1" style="color: #999;">Waiting for selection...</h3>
+            <p style="color: #bbb;">Your personalized plan will appear here after analysis.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    #disease-select {
+        background: white;
+        border: 2px solid #eee;
+        padding: 10px;
+    }
+    #disease-select option {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 2px;
+    }
+    #disease-select option:checked {
+        background: var(--primary) !important;
+        color: white;
+    }
+    .rec-section h4 {
+        color: var(--primary);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .rec-section p {
+        margin-bottom: 5px;
+        color: #444;
+    }
+</style>
+
+<script>
+    document.getElementById("disease-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const selectedDiseases = Array.from(document.getElementById("disease-select").selectedOptions).map(option => option.value);
+        const symptomsText = document.getElementById("symptoms").value;
+        
+        if (selectedDiseases.length === 0 && symptomsText.trim() === '') {
+            alert('Please select a disease or describe your symptoms.');
+            return;
+        }
+
+        // Show loading state
+        const btn = this.querySelector('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+        btn.disabled = true;
+
+        fetch("/get_recommendation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ diseases: selectedDiseases, symptoms: symptomsText })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            
+            if (data.error) return alert(data.error);
+            
+            document.getElementById("medicine").innerText = data.medicine;
+            document.getElementById("dosage").innerText = data.dosage;
+            document.getElementById("doses").innerText = data.doses;
+            document.getElementById("diet").innerText = data.diet;
+            document.getElementById("diet_plan").innerText = data.diet_plan;
+            
+            document.getElementById("placeholder-card").style.display = "none";
+            document.getElementById("result-card").style.display = "block";
+            
+            // Smooth scroll to result
+            document.getElementById("result-card").scrollIntoView({ behavior: 'smooth' });
+        })
+        .catch(err => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            alert("Something went wrong!");
+        });
+    });
+</script>
+{% endblock %}

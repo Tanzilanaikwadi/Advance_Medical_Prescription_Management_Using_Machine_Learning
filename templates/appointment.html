@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block title %}Book Appointment - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card card" style="max-width: 800px;">
+        <div class="text-center mb-2">
+            <i class="fas fa-calendar-check fa-3x" style="color: var(--primary);"></i>
+            <h2 class="mt-1">Schedule Your Visit</h2>
+            <p style="color: #666;">Choose your preferred doctor and consultation mode.</p>
+        </div>
+
+        <form action="{{ url_for('submit_appointment') }}" method="POST">
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label><i class="fas fa-id-card"></i> Patient ID</label>
+                    <input type="text" name="patient_id" value="{{ patient[0] }}" readonly style="background: #f8f9fa; cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" name="name" value="{{ patient[1] }}" readonly style="background: #f8f9fa; cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" name="email" value="{{ patient[2] }}" readonly style="background: #f8f9fa; cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Contact Number</label>
+                    <input type="text" name="phone" value="{{ patient[4] }}" readonly style="background: #f8f9fa; cursor: not-allowed;">
+                </div>
+
+                <!-- Hidden Fields for backend processing -->
+                <input type="hidden" name="gender" value="{{ patient[5] }}">
+                <input type="hidden" name="blood_group" value="{{ patient[7] }}">
+            </div>
+
+            <div class="form-group mt-1">
+                <label><i class="fas fa-user-md"></i> Choose Specialist</label>
+                <select name="doctor" required style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee;">
+                    <option value="" disabled selected>Select a Doctor</option>
+                    {% for doctor in doctors %}
+                        <option value="{{ doctor[0] }}">{{ doctor[1] }} — {{ doctor[2] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="grid grid-2 mt-1">
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> Preferred Date</label>
+                    <input type="date" name="prefer_date" required style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee;">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Preferred Time</label>
+                    <input type="time" name="prefer_time" required style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee;">
+                </div>
+            </div>
+
+            <div class="form-group mt-1">
+                <label><i class="fas fa-hospital-user"></i> Consultation Mode</label>
+                <div style="display: flex; gap: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="consultation_mode" value="Physical" checked> Physical (Clinic Visit)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="consultation_mode" value="Video"> Video (Online Consultation)
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group mt-1">
+                <label><i class="fas fa-notes-medical"></i> Reason for Visit (Symptoms)</label>
+                <textarea name="symptoms" rows="3" placeholder="Describe your symptoms briefly..." style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2;">Confirm Booking</button>
+                <a href="{{ url_for('patient_dashboard') }}" class="btn btn-outline" style="flex: 1; text-align: center;">Go Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4rem 1rem;
+        background: #f0f2f5;
+        min-height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    input:focus, select:focus {
+        border-color: var(--primary) !important;
+        outline: none;
+    }
+</style>
+{% endblock %}

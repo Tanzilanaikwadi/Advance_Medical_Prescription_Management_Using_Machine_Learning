@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+
+{% block title %}My Profile - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header text-center mb-1">
+            <div class="profile-img-container">
+                <img src="{{ url_for('static', filename='patient_images/'+patient.image) }}" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <h3 class="mt-1">{{ patient.name }}</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Patient Member</p>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('patient_dashboard') }}"><i class="fas fa-th-large"></i> Overview</a></li>
+            <li><a href="{{ url_for('profile', patient_id=patient_id) }}" class="active"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
+            <li><a href="{{ url_for('patient_history') }}"><i class="fas fa-history"></i> Medical History</a></li>
+            <li><a href="{{ url_for('home') }}" style="color: #ff7675;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner card" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+            <h2>Account Settings</h2>
+            <p>Keep your contact information and medical profile up to date for better care.</p>
+        </div>
+
+        <div class="card mt-2" style="max-width: 800px; margin: 0 auto;">
+            <form action="{{ url_for('update_profile', patient_id=patient_id) }}" method="post" enctype="multipart/form-data">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" name="name" value="{{ patient.name }}" required style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee;">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email Address</label>
+                        <input type="email" name="email" value="{{ patient.email }}" required style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee;">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="text" name="phone" value="{{ patient.phone }}" required style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee;">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tint"></i> Blood Group</label>
+                        <input type="text" name="blood_group" value="{{ patient.blood_group }}" required style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee;">
+                    </div>
+                </div>
+
+                <div class="form-group mt-1">
+                    <label><i class="fas fa-map-marker-alt"></i> Residential Address</label>
+                    <input type="text" name="address" value="{{ patient.address }}" required style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #eee;">
+                </div>
+
+                <div class="form-group mt-1">
+                    <label><i class="fas fa-camera"></i> Change Profile Picture</label>
+                    <input type="file" name="profile_pic" accept="image/*" style="width: 100%; padding: 10px; background: #f8f9fa; border-radius: 10px; border: 2px dashed #ddd;">
+                </div>
+
+                <div class="mt-2 text-right">
+                    <button type="submit" class="btn btn-primary" style="padding: 12px 40px;">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container { display: flex; min-height: calc(100vh - 70px);
+        overflow-y: auto; }
+    .sidebar { 
+        width: 280px; 
+        background: var(--primary); 
+        color: white; 
+        padding: 2rem 1rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .profile-img-container {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 4px solid var(--secondary);
+        overflow: hidden;
+        background: white;
+    }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1.2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+    .main-content { flex: 1; padding: 2rem; background: #f0f2f5; }
+    .welcome-banner { color: white; border: none; }
+    input:focus { border-color: var(--primary) !important; outline: none; }
+</style>
+{% endblock %}

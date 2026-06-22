@@ -1,0 +1,199 @@
+{% extends "layout.html" %}
+
+{% block title %}Emergency Resources - Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header text-center mb-1">
+            <div class="profile-img-container">
+                <i class="fas fa-user-shield fa-4x" style="color: var(--primary); margin-top: 15px;"></i>
+            </div>
+            <h3 class="mt-1">Administrator</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Emergency Response</p>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('admin_doctors') }}"><i class="fas fa-user-md"></i> Doctors Management</a></li>
+            <li><a href="{{ url_for('patient_info') }}"><i class="fas fa-users"></i> Patients & Appointments</a></li>
+            <li><a href="{{ url_for('emergency_services') }}" class="active"><i class="fas fa-ambulance"></i> Emergency Services</a></li>
+            <li><a href="{{ url_for('admin_view_feedbacks') }}"><i class="fas fa-comments"></i> Feedback & Complaints</a></li>
+            <li><a href="{{ url_for('home') }}" style="color: #ff7675;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="welcome-banner card" style="background: linear-gradient(135deg, #c0392b 0%, #8e44ad 100%);">
+            <h2>Critical Resources Management</h2>
+            <p>Update live bed availability and manage emergency contacts for rapid response.</p>
+        </div>
+
+        <div class="grid grid-2 mt-2">
+            <!-- Resource Update Card -->
+            <div class="card">
+                <h3><i class="fas fa-sync-alt"></i> Update Live Stats</h3>
+                <form method="POST" action="{{ url_for('update_resources') }}" class="mt-2">
+                    <div class="form-group">
+                        <label>Available Beds</label>
+                        <input type="number" name="beds" value="{{ beds }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ambulance Helpline</label>
+                        <input type="text" name="helpline" value="{{ helpline }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+
+            <!-- Current Stats Card -->
+            <div class="card text-center" style="display: flex; flex-direction: column; justify-content: center; background: #fff5f5;">
+                <div class="stat-item">
+                    <h1 style="font-size: 4rem; color: #c0392b;">{{ beds }}</h1>
+                    <p style="font-weight: 700; color: #666; text-transform: uppercase;">Beds Currently Available</p>
+                </div>
+                <hr style="margin: 1.5rem 0; opacity: 0.1;">
+                <div class="stat-item">
+                    <h2 style="color: var(--primary);">{{ helpline }}</h2>
+                    <p style="font-weight: 700; color: #666; text-transform: uppercase;">Active Helpline</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Services List -->
+        <div class="card mt-2">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3>Registered Emergency Units</h3>
+                <button class="btn btn-outline" id="showAddForm"><i class="fas fa-plus"></i> Add New Unit</button>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Unit Image</th>
+                            <th>Service Name</th>
+                            <th>Contact / Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in services %}
+                        <tr>
+                            <td>
+                                <img src="{{ service[3] }}" style="width: 80px; height: 50px; border-radius: 8px; object-fit: cover;">
+                            </td>
+                            <td><strong>{{ service[1] }}</strong></td>
+                            <td>
+                                <small><i class="fas fa-phone-alt"></i> {{ service[2] }}</small><br>
+                                <small><i class="fas fa-map-marker-alt"></i> {{ service[4] if service|length > 4 else 'N/A' }}</small>
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('remove_emergency_service') }}">
+                                    <input type="hidden" name="service_id" value="{{ service[0] }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Remove this service?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add Service Modal/Form (Hidden by default) -->
+        <div id="addServiceForm" class="card mt-2" style="display: none;">
+            <h3>Register New Emergency Unit</h3>
+            <form method="POST" action="/add_emergency_service" enctype="multipart/form-data" class="mt-2">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label>Service Name</label>
+                        <input type="text" name="service_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="text" name="contact_number" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Station Address</label>
+                    <input type="text" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label>Unit Image</label>
+                    <input type="file" name="image" accept="image/*" required>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Register Unit</button>
+                    <button type="button" class="btn btn-outline" id="hideAddForm" style="flex: 1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container { display: flex; min-height: calc(100vh - 70px);
+        overflow-y: auto; }
+    .sidebar { 
+        width: 280px; 
+        background: var(--primary); 
+        color: white; 
+        padding: 2rem 1rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .profile-img-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 4px solid var(--secondary);
+        overflow: hidden;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .sidebar-nav { list-style: none; margin-top: 2rem; }
+    .sidebar-nav li { margin-bottom: 0.5rem; }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1.2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+    
+    .main-content { flex: 1; padding: 2rem; background: #f0f2f5; }
+    .welcome-banner { color: white; border: none; }
+    
+    .modern-table { width: 100%; border-collapse: collapse; }
+    .modern-table th { text-align: left; padding: 1rem; border-bottom: 2px solid #eee; color: #666; font-size: 0.85rem; }
+    .modern-table td { padding: 1rem; border-bottom: 1px solid #eee; vertical-align: middle; }
+    
+    .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+</style>
+
+<script>
+    document.getElementById('showAddForm').onclick = () => {
+        document.getElementById('addServiceForm').style.display = 'block';
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    };
+    document.getElementById('hideAddForm').onclick = () => {
+        document.getElementById('addServiceForm').style.display = 'none';
+    };
+</script>
+{% endblock %}

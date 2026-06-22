@@ -1,0 +1,182 @@
+{% extends "layout.html" %}
+
+{% block title %}Patient Access - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card card">
+        <div class="auth-toggle">
+            <button id="show-login" class="active" onclick="toggleAuth('login')">Login</button>
+            <button id="show-register" onclick="toggleAuth('register')">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-section">
+            <h2 class="text-center mt-1">Welcome Back</h2>
+            <p class="text-center" style="color: #666; margin-bottom: 2rem;">Please enter your credentials to access your dashboard.</p>
+            <form action="{{ url_for('login') }}" method="POST">
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" name="email" placeholder="name@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" name="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+            </form>
+        </div>
+
+        <!-- Registration Form -->
+        <div id="register-section" style="display: none;">
+            <h2 class="text-center mt-1">join</h2>
+            
+            <p class="text-center" style="color: #666; margin-bottom: 2rem;">Create an account to manage your health records.</p>
+            <form action="{{ url_for('add_patient') }}" method="POST" enctype="multipart/form-data" onsubmit="return validatePassword()">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" name="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" placeholder="john@example.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="reg_password" placeholder="•••••••••••" required minlength="8" onkeyup="validatePassword()">
+                    <small id="password-error" style="color: #e74c3c;"></small>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" name="phone" pattern="\d{10}" placeholder="10-digit number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="birth_date">Birth Date</label>
+                        <input type="date" name="birth_date" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" name="address" placeholder="Full residential address" required>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select name="gender" required>
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="blood_group">Blood Group</label>
+                        <select name="blood_group" required>
+                            <option value="" disabled selected>Select Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Profile Photo</label>
+                    <input type="file" name="image" accept="image/*" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4rem 1rem;
+        background: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=2000');
+        background-size: cover;
+        background-position: center;
+        min-height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .auth-card {
+        width: 100%;
+        max-width: 600px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+    .auth-toggle {
+        display: flex;
+        background: #eee;
+        border-radius: var(--border-radius);
+        padding: 5px;
+        margin-bottom: 2rem;
+    }
+    .auth-toggle button {
+        flex: 1;
+        padding: 0.8rem;
+        border: none;
+        background: transparent;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .auth-toggle button.active {
+        background: var(--white);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        color: var(--primary);
+    }
+</style>
+
+<script>
+    function toggleAuth(type) {
+        const loginSec = document.getElementById('login-section');
+        const regSec = document.getElementById('register-section');
+        const loginBtn = document.getElementById('show-login');
+        const regBtn = document.getElementById('show-register');
+
+        if (type === 'login') {
+            loginSec.style.display = 'block';
+            regSec.style.display = 'none';
+            loginBtn.classList.add('active');
+            regBtn.classList.remove('active');
+        } else {
+            loginSec.style.display = 'none';
+            regSec.style.display = 'block';
+            loginBtn.classList.remove('active');
+            regBtn.classList.add('active');
+        }
+    }
+
+    function validatePassword() {
+        let password = document.getElementById("reg_password").value;
+        let errorDiv = document.getElementById("password-error");
+        let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (!regex.test(password)) {
+            errorDiv.textContent = "⚠ Must be 8+ chars with upper, lower, number & special char.";
+            return false;
+        } else {
+            errorDiv.textContent = "";
+            return true;
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block title %}About Us - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<section class="hero" style="padding: 4rem 5%;">
+    <h1>About <span>SHREE HEALTHCARE</span></h1>
+    <p>Compassion, Innovation, and Excellence in Medical Care since 1995.</p>
+</section>
+
+<div class="container">
+    <div class="grid grid-2" style="align-items: center;">
+        <div class="card">
+            <h2>Our Mission</h2>
+            <p class="mt-1">To provide compassionate, high-quality, and affordable healthcare services to our community, ensuring every patient receives the care they deserve.</p>
+            
+            <h2 class="mt-2">Our Vision</h2>
+            <p class="mt-1">To be a globally recognized healthcare institution known for innovation, patient-centered care, and medical excellence.</p>
+        </div>
+        <div style="border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow);">
+            <img src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=1000" alt="Medical Team" style="width: 100%; height: auto;">
+        </div>
+    </div>
+
+    <div class="mt-2 card">
+        <h2 class="text-center">Our Journey</h2>
+        <div class="timeline mt-2">
+            <div class="timeline-item">
+                <div class="year">1995</div>
+                <div class="desc">Hospital founded with 50 beds and a small dedicated team.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="year">2005</div>
+                <div class="desc">Expansion to 250 beds and opening of our advanced ICU wing.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="year">2015</div>
+                <div class="desc">Introduced robotic-assisted surgery and digital health records.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="year">2026</div>
+                <div class="desc">Launching AI-driven diagnostic tools and virtual consultation portal.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-3 mt-2">
+        <div class="card text-center">
+            <i class="fas fa-heartbeat fa-2x" style="color: #ff7675;"></i>
+            <h4 class="mt-1">Cardiology</h4>
+            <p>Advanced heart care and surgery.</p>
+        </div>
+        <div class="card text-center">
+            <i class="fas fa-brain fa-2x" style="color: #6c5ce7;"></i>
+            <h4 class="mt-1">Neurology</h4>
+            <p>Expert neurological diagnostics.</p>
+        </div>
+        <div class="card text-center">
+            <i class="fas fa-bone fa-2x" style="color: #00b894;"></i>
+            <h4 class="mt-1">Orthopedics</h4>
+            <p>Comprehensive bone and joint care.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .timeline-item {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: transform 0.3s;
+    }
+    .timeline-item:hover { transform: scale(1.02); }
+    .year {
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--primary);
+        min-width: 80px;
+    }
+    .desc { color: #555; line-height: 1.6; }
+</style>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}Staff Feedback - SHREE HEALTHCARE{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card card" style="max-width: 600px;">
+        <div class="text-center mb-2">
+            <i class="fas fa-user-md fa-3x" style="color: var(--primary);"></i>
+            <h2 class="mt-1">Doctor's Feedback</h2>
+            <p style="color: #666;">We value our medical staff's insights to help improve our hospital operations.</p>
+        </div>
+
+        <form method="post">
+            <div class="form-group">
+                <label>Operational Feedback</label>
+                <textarea name="feedback" placeholder="Share your experience or suggestions for improvement..." required style="min-height: 150px; padding: 1rem; border-radius: 12px; border: 2px solid #eee; width: 100%; font-family: inherit; font-size: 1rem; transition: border-color 0.3s;"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2;">Submit Feedback</button>
+                <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4rem 1rem;
+        background: #f0f4f8;
+        min-height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    textarea:focus {
+        border-color: var(--primary) !important;
+        outline: none;
+    }
+</style>
+{% endblock %}
